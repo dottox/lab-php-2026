@@ -2,7 +2,7 @@
 
 namespace App\Models\User;
 
-
+use App\Models\Service\Service;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +13,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProfessionalProfile extends Model
 {
     use SoftDeletes;
-    protected $cast = [
-        'avg_rating' => 'float'
+    protected $casts = [
+        'avg_rating' => 'float',
+        'reviews_count' => 'integer',
+        'is_verified' => 'boolean',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function services()
+    {
+        return $this->hasMany(Service::class, 'professional_id');
+    }
 }

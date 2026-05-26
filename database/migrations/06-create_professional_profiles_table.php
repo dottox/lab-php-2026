@@ -12,14 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('professional_profiles', function (Blueprint $table) {
-            $table->softDeletes();
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->index();
-            $table->string('bio')->nullable();
+            $table->uuid('id')->primary();
+
+            $table->foreignUuid('user_id')
+                ->unique()
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->text('bio')->nullable();
+
             $table->float('avg_rating')->default(0);
-            $table->integer('total_reviews')->default(0);
+            $table->integer('reviews_count')->default(0);
             $table->boolean('is_verified')->default(false);
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
