@@ -2,9 +2,11 @@
 
 namespace App\Models\Service;
 
+use App\Models\Company\Company;
 use App\Models\User\ProfessionalProfile;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -29,8 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 ])]
 class Service extends Model
 {
-    use HasUuids;
-    use SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected function casts(): array
     {
@@ -63,5 +64,10 @@ class Service extends Model
             ProfessionalProfile::class,
             'professional_id'
         );
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 }

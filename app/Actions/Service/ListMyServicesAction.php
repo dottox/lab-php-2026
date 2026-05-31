@@ -2,7 +2,9 @@
 
 namespace App\Actions\Service;
 
+use App\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class ListMyServicesAction
@@ -10,9 +12,16 @@ class ListMyServicesAction
     public function __invoke(): Collection
     {
         $user = auth('user_jwt')->user();
+
         $professionalProfile = $user->professionalProfile;
 
-        abort_if(!$professionalProfile, 403, 'Debes tener un perfil profesional.');
+        if (! $professionalProfile) {
+            throw new ApiException(
+                error: 'ProfessionalProfileNotFound',
+                message: 'Professional profile not found for the authenticated user.',
+                status: Response::HTTP_NOT_FOUND
+            );
+        }
 
         return $professionalProfile
             ->services()

@@ -4,7 +4,6 @@ namespace App\Actions\ProfessionalProfile;
 
 use App\Http\Requests\ProfessionalProfile\UpdateProfessionalProfileRequest;
 use App\Models\User\ProfessionalProfile;
-use Illuminate\Support\Facades\Auth;
 
 class UpdateProfessionalProfileAction
 {
@@ -13,7 +12,7 @@ class UpdateProfessionalProfileAction
     ): ProfessionalProfile {
 
         $profile = ProfessionalProfile::query()
-            ->where('user_id', Auth::id())
+            ->where('user_id', auth('user_jwt')->id())
             ->firstOrFail();
 
         $profile->update(

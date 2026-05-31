@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('contacts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id');
             $table->foreignId('contact_type_id');
             $table->string('value');
             $table->timestamps();
