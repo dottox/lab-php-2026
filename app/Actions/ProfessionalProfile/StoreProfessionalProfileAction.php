@@ -2,9 +2,10 @@
 
 namespace App\Actions\ProfessionalProfile;
 
+use App\Exceptions\ApiException;
 use App\Http\Requests\ProfessionalProfile\StoreProfessionalProfileRequest;
 use App\Models\User\ProfessionalProfile;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 use Tymon\JWTAuth\JWTGuard;
 
 class StoreProfessionalProfileAction
@@ -14,10 +15,18 @@ class StoreProfessionalProfileAction
     ): ProfessionalProfile {
 
         /** @var JWTGuard $guard */
-        $guard = auth('user_jwt')->user()->id;
+        $user = auth('user_jwt')->user();
+
+        if (ProfessionalProfile::where('user_id', $user->id)->exists()) {
+            throw new ApiException(
+                error: 'ProfessionalProfileAlreadyExists',
+                message: 'El perfil profesional ya existe para este usuario.',
+                status: Response::HTTP_CONFLICT
+            );
+        }
 
         return ProfessionalProfile::create([
-            'user_id' => $guard,
+            'user_id' => $user->id,
             'bio' => $request->validated('bio'),
         ]);
     }

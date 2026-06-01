@@ -17,7 +17,12 @@ class LoginAction
         /** @var JWTGuard $guard */
         $guard = auth('user_jwt');
         if (! $token = $guard->attempt($credentials)) {
-            return ['token' => null, 'refresh_token' => null, 'user' => null];
+            return [
+                'access_token' => null,
+                'refresh_token' => null,
+                'expires_in' => null,
+                'user' => null,
+            ];
         }
 
         $user = $guard->user();

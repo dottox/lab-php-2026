@@ -2,8 +2,10 @@
 
 namespace App\Actions\Service;
 
+use App\Exceptions\ApiException;
 use App\Http\Requests\Service\StoreServiceRequest;
 use App\Models\Service\Service;
+use Illuminate\Http\Response;
 
 class StoreServiceAction
 {
@@ -13,11 +15,25 @@ class StoreServiceAction
         $user = auth('user_jwt')->user();
         $professionalProfile = $user->professionalProfile;
 
-        // if(!$professionalProfile) {
-        //     throw new \Exception('Professional profile not found for the authenticated user.');
-        // }
+        if (! $professionalProfile) {
+            throw new ApiException(
+                error: 'ProfessionalProfileRequired',
+                message: 'Professional profile is required to create services.',
+                status: Response::HTTP_FORBIDDEN
+            );
+        }
 
-        abort_if(!$professionalProfile, 404, 'Professional profile not found for the authenticated user.');
+        if (! empty($data['company_id'])) {
+            if (! $professionalProfile->companies()
+                    ->whereKey($data['company_id'])
+                    ->exists()) {
+                throw new ApiException(
+                    error: 'CompanyForbidden',
+                    message: 'No puedes asociar una empresa que no te pertenece.',
+                    status: Response::HTTP_FORBIDDEN
+                );
+            }
+        }
 
         return Service::create([
             ...$data,
